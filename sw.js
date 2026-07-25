@@ -4,7 +4,7 @@
 // 캐시는 네트워크가 끊겼을 때만 쓰는 비상용 폴백이다.
 
 // 게임을 크게 바꾼 뒤 강제로 캐시를 비우고 싶으면 이 버전을 올린다 (fridge-v2, v3 ...)
-const CACHE = 'fridge-v3';
+const CACHE = 'fridge-v4';
 
 // 설치 즉시 새 서비스워커를 활성 상태로 넘긴다 (대기 없이 교체)
 self.addEventListener('install', function (event) {
