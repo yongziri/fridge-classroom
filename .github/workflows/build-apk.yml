@@ -100,8 +100,14 @@ jobs:
           cat > "$PKG_DIR/MainActivity.java" <<'JAVA'
           package kr.classroom.fridge;
 
+          import android.content.Context;
           import android.os.Bundle;
+          import android.print.PrintAttributes;
+          import android.print.PrintDocumentAdapter;
+          import android.print.PrintManager;
           import android.view.View;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.WebView;
           import com.getcapacitor.BridgeActivity;
 
           public class MainActivity extends BridgeActivity {
@@ -109,6 +115,30 @@ jobs:
             public void onCreate(Bundle savedInstanceState) {
               super.onCreate(savedInstanceState);
               hideSystemUI();
+              // 🖨️ 네이티브 인쇄 다리 — WebView는 window.print()를 무시하므로,
+              // 게임의 printReport()가 window.AndroidPrint.print()를 부르면
+              // 안드로이드 인쇄 대화상자(실제 프린터 + PDF로 저장)를 연다.
+              // @media print 규칙은 인쇄 어댑터가 그대로 적용한다.
+              final WebView wv = this.bridge.getWebView();
+              wv.addJavascriptInterface(new Object() {
+                @JavascriptInterface
+                public void print() {
+                  runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                      try {
+                        PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                        PrintDocumentAdapter adapter =
+                            bridge.getWebView().createPrintDocumentAdapter("냉장고를부탁해_리포트");
+                        pm.print("냉장고를 부탁해 리포트", adapter,
+                            new PrintAttributes.Builder()
+                                .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                                .build());
+                      } catch (Exception e) { /* 인쇄 미지원 기기 — 조용히 무시 */ }
+                    }
+                  });
+                }
+              }, "AndroidPrint");
             }
 
             // 포커스를 되찾을 때(알림창 등을 닫은 뒤)에도 다시 숨긴다
