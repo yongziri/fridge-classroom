@@ -75,7 +75,6 @@ jobs:
             "appId": "kr.classroom.fridge",
             "appName": "냉장고를 부탁해",
             "webDir": "www",
-            "android": { "allowMixedContent": true },
             "server": { "androidScheme": "https" }
           }
           JSON
@@ -91,6 +90,11 @@ jobs:
           F=android/variables.gradle
           sed -i 's/minSdkVersion = [0-9]*/minSdkVersion = 30/' "$F"
           echo "=== variables.gradle ===" && cat "$F"
+          # 보안 하드닝(행안부 모바일 앱 보안약점 진단 반영, 2026-07-31)
+          #  · allowBackup 차단 — 백업 통로로 앱 데이터가 추출되지 않게
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:allowBackup="true"/android:allowBackup="false"/' "$M"
+          grep -o 'android:allowBackup="[a-z]*"' "$M"
 
       # 전체화면(몰입 모드) — 상태표시줄·내비게이션바를 숨겨 게임이 화면 전체를 쓰게 한다.
       # 시스템 바가 남아 있으면 세로 공간이 줄어 1280×800 설계가 눌려 보인다.
