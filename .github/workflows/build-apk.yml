@@ -139,6 +139,28 @@ jobs:
                   });
                 }
               }, "AndroidPrint");
+              // 📥 네이티브 저장 다리 — WebView는 blob 다운로드를 조용히 버리므로,
+              // 게임의 엑셀 내보내기가 window.AndroidSave.save(파일명, MIME, 내용)을 부르면
+              // MediaStore로 기기 [다운로드] 폴더에 저장한다 (minSdk 30이라 별도 권한 불필요).
+              // @JavascriptInterface 는 WebView의 JS 브리지 스레드에서 돌므로 UI를 막지 않는다.
+              wv.addJavascriptInterface(new Object() {
+                @JavascriptInterface
+                public boolean save(String name, String mime, String text) {
+                  try {
+                    android.content.ContentValues cv = new android.content.ContentValues();
+                    cv.put(android.provider.MediaStore.Downloads.DISPLAY_NAME, name);
+                    cv.put(android.provider.MediaStore.Downloads.MIME_TYPE, mime);
+                    android.net.Uri uri = getContentResolver().insert(
+                        android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv);
+                    if (uri == null) return false;
+                    java.io.OutputStream os = getContentResolver().openOutputStream(uri);
+                    if (os == null) return false;
+                    os.write(text.getBytes("UTF-8"));
+                    os.close();
+                    return true;
+                  } catch (Exception e) { return false; } // 실패 시 게임 쪽이 안내 토스트를 띄운다
+                }
+              }, "AndroidSave");
             }
 
             // 포커스를 되찾을 때(알림창 등을 닫은 뒤)에도 다시 숨긴다
