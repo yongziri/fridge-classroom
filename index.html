@@ -3925,6 +3925,20 @@ if (typeof L === 'undefined') {
       <button type="button" class="gate-meta-credit" onclick="toggleCredits()" title="이 게임에 쓰인 자료의 출처와 저작권을 봅니다">ⓘ 출처·저작권</button>
     </div>
   </div><!-- /gate-wrap (※ #screen-gate 는 참가 모달 뒤 아래쪽에서 닫힌다 — 여기서 닫으면 screen-main 이 게이트 안에 중첩된다) -->
+  <!-- 🔍 심사용 진입 (2026-09-07 전국대회 컨설팅 반영) — 심사위원이 계정·교실 없이 세 화면을 바로 볼 수 있게 한다.
+       학생 눈에 안 띄게 저채도·점선으로 작게. 가상 데이터 경로는 사진 모드 시딩 계층을 재사용한다. -->
+  <div id="judge-entry" style="position:fixed;right:10px;bottom:10px;z-index:100001;font-family:'MonaS',monospace">
+    <div id="judge-menu" style="display:none;position:absolute;right:0;bottom:calc(100% + 6px);flex-direction:column;gap:5px;background:rgba(10,14,26,0.92);border:1px dashed #3b4867;border-radius:8px;padding:8px;white-space:nowrap">
+      <button onclick="judgeMenuHide(); devModeEnter();" title="가상 조원(봇) 3명과 투표→공동 여정→미니게임→급식판 전체 흐름을 직접 플레이합니다"
+        style="background:rgba(10,14,26,0.6);border:1px dashed #3b4867;color:#8a94ad;font-family:'MonaS',monospace;font-size:13px;padding:7px 10px;border-radius:5px;cursor:pointer;text-align:left">🤝 체험 모드 <span style="opacity:.65">— 가상 조원(봇)과 실제 플레이</span></button>
+      <button onclick="judgeMenuHide(); judgeStudentView();" title="수업이 한창 진행된 학생 화면을 가상 데이터로 보여줍니다 (저장·전송 없음)"
+        style="background:rgba(10,14,26,0.6);border:1px dashed #3b4867;color:#8a94ad;font-family:'MonaS',monospace;font-size:13px;padding:7px 10px;border-radius:5px;cursor:pointer;text-align:left">🧑‍🎓 학생 화면 <span style="opacity:.65">— 가상 데이터</span></button>
+      <button onclick="judgeMenuHide(); judgeTeacherView();" title="30명 학급이 접속한 교사 대시보드를 가상 데이터로 보여줍니다 (저장·전송 없음)"
+        style="background:rgba(10,14,26,0.6);border:1px dashed #3b4867;color:#8a94ad;font-family:'MonaS',monospace;font-size:13px;padding:7px 10px;border-radius:5px;cursor:pointer;text-align:left">👨‍🏫 교사 화면 <span style="opacity:.65">— 가상 데이터</span></button>
+    </div>
+    <button id="judge-entry-btn" onclick="judgeMenuToggle()" title="심사용 보기 — 체험 모드·학생 화면·교사 화면을 바로 봅니다"
+      style="background:rgba(10,14,26,0.72);border:1px dashed #3b4867;color:#5a6a8a;font-family:'MonaS',monospace;font-size:13px;padding:5px 9px;border-radius:8px;cursor:pointer">🔍 심사용</button>
+  </div>
   <!-- 참가 모달: "교실 참가" 클릭 시 팝업 -->
   <div class="gate-modal" id="gate-join-modal" style="display:none" onclick="if(event.target===this)gateHideJoin()">
     <div class="gate-card" id="gate-join-card">
@@ -4835,7 +4849,7 @@ if (typeof L === 'undefined') {
       <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px">🔧 수업 준비 도구 <span style="opacity:.7">— 수업 중에는 쓰지 않아요</span></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="live-btn" onclick="liveCloseTeacherModal(); devModeEnter();"
-          title="교실 참가 없이 혼자 들어가서 재료·여정을 점검합니다">🔧 점검 모드</button>
+          title="교실 참가 없이 가상 조원(봇)과 혼자 전체 흐름을 체험합니다">🤝 체험 모드</button>
         <!-- 📸 사진 모드 버튼은 출품본에서 숨김(2026-07-31) — 촬영용 도구라 수업·심사와 무관.
              photoModeEnter() 등 코드는 남겨 두어 콘솔에서는 쓸 수 있다 -->
       </div>
@@ -4857,7 +4871,7 @@ if (typeof L === 'undefined') {
      촬영자가 학생 화면 ↔ 교사 화면을 오갈 수 있게 하는 도구. 사진에 최대한 안 걸리도록
      점선·저채도 + 📸를 눌러 접을 수 있다. 수업(교실 참가) 경로에서는 절대 표시되지 않는다. -->
 <div id="photo-mode-bar" style="display:none;position:fixed;right:10px;bottom:10px;z-index:100001;align-items:center;gap:5px;background:rgba(10,14,26,0.72);border:1px dashed #3b4867;border-radius:8px;padding:4px 6px;font-family:'MonaS',monospace">
-  <button onclick="photoBarToggle()" title="사진 모드 도구 접기/펴기"
+  <button id="photo-bar-icon" onclick="photoBarToggle()" title="사진 모드 도구 접기/펴기"
     style="background:none;border:none;color:#5a6a8a;font-size:13px;padding:2px 4px;cursor:pointer;line-height:1">📸</button>
   <span id="photo-mode-tools" style="display:flex;gap:5px">
     <button onclick="photoGoMain()" title="학생 화면(메인 냉장고)으로"
@@ -16557,7 +16571,7 @@ function devModeEnter() {
   try { texmexClose(); } catch (e) {}
   // 신원·조 시딩: sid 9901 = 시연에서 "나"로 쓰는 sid (봇 로직 호환)
   state.liveGroup = 1;
-  state.studentName = state.studentName || '점검자';
+  state.studentName = state.studentName || '체험자';
   state.studentId = state.studentId || '9901';
   // 조원 명단 지연 주입 — COOP 모듈은 이 함수보다 뒤에 선언되므로(var 미할당) 즉시 넣으면 덮어써진다.
   // ★ lunchDemoStart와 동일 패턴: 반드시 setTimeout(…, 0)으로 지연. 이름의 "봇·" 접두는 화면에서 점검 모드임을 구분하기 위한 것(봇 로직은 sid로만 식별하므로 안전).
@@ -16574,7 +16588,7 @@ function devModeEnter() {
   showScreen('screen-main');
   updateMainUI(); // 신원·조 시딩 뒤에 호출 — 상태바에 "점검자 · 1모둠"이 바로 보이도록
   try {
-    showFeedbackToast('🔧 점검 모드 — 가상 조원 3명과 함께 전체 흐름(투표→공동 여정→미니게임→급식판)을 점검할 수 있어요');
+    showFeedbackToast('🤝 체험 모드 — 가상 조원(봇) 3명과 함께 전체 흐름(투표→공동 여정→미니게임→급식판)을 체험할 수 있어요');
   } catch (e) {}
 }
 
@@ -16770,7 +16784,7 @@ function photoQuietToasts() {
   if (_photoToastOrig) return;
   _photoToastOrig = showFeedbackToast;
   window.showFeedbackToast = function (msg, title) {
-    if (!window.__photoMode) { _photoToastOrig(msg, title); return; }
+    if (!window.__photoMode || window.__judgeMode) { _photoToastOrig(msg, title); return; }
     try { console.debug('[사진 모드] 토스트 억제:', msg); } catch (e) {}
   };
 }
@@ -16947,8 +16961,29 @@ function photoBarToggle() {
   tools.style.display = (tools.style.display === 'none') ? 'flex' : 'none';
 }
 function photoExit() {
-  if (!confirm('사진 모드를 끝내고 처음 화면으로 돌아갈까요?\n\n· 심어 둔 가상 데이터는 모두 사라집니다\n· 저장된 것이 없으므로 실제 수업 기록에는 아무 영향이 없어요')) return;
+  if (!confirm('가상 화면을 끝내고 처음 화면으로 돌아갈까요?\n\n· 심어 둔 가상 데이터는 모두 사라집니다\n· 저장된 것이 없으므로 실제 수업 기록에는 아무 영향이 없어요')) return;
   location.reload();
+}
+
+// ══ 🔍 심사용 진입 (2026-09-07 전국대회 컨설팅 반영) ══
+// 사진 모드의 가상 데이터 시딩 계층을 그대로 재사용하되, 심사위원은 실제 UX를 봐야 하므로
+// 토스트 억제는 하지 않는다(__judgeMode 플래그로 구분). 저장·MQTT 발행 0건은 사진 모드와 동일.
+function judgeMenuToggle() {
+  var m = document.getElementById('judge-menu');
+  if (m) m.style.display = (m.style.display === 'none') ? 'flex' : 'none';
+}
+function judgeMenuHide() {
+  var m = document.getElementById('judge-menu');
+  if (m) m.style.display = 'none';
+}
+function judgeStudentView() {
+  window.__judgeMode = true;
+  photoModeEnter();
+}
+function judgeTeacherView() {
+  window.__judgeMode = true;
+  photoModeEnter();   // 학생·교사 공용 가상 데이터를 먼저 심는다
+  photoGoTeacher();   // 곧바로 교사 대시보드로 전환
 }
 
 // ── 진입점 ──
@@ -16976,9 +17011,18 @@ function photoModeEnter() {
   try { renderGoalCard(); } catch (e) {}
   var bar = document.getElementById('photo-mode-bar');
   if (bar) bar.style.display = 'flex';
+  // 심사 모드로 들어왔으면 이동 바 아이콘을 🔍로 바꿔 "사진 촬영 도구"로 오해하지 않게 한다
+  if (window.__judgeMode) {
+    var barIcon = document.getElementById('photo-bar-icon');
+    if (barIcon) { barIcon.textContent = '🔍'; barIcon.title = '심사용 도구 접기/펴기'; }
+  }
   // 안내 토스트만은 원본 함수로 직접 띄운다 (억제 대상에서 제외)
   try {
-    (_photoToastOrig || showFeedbackToast)('📸 사진 모드 — 보고서 촬영용 가상 데이터입니다. 저장·전송되지 않아요', '📸 사진 모드');
+    if (window.__judgeMode) {
+      (_photoToastOrig || showFeedbackToast)('🔍 심사용 화면 — 가상 데이터입니다. 저장·전송되지 않아요. 우측 하단 바로 학생↔교사 화면을 오갈 수 있어요', '🔍 심사용');
+    } else {
+      (_photoToastOrig || showFeedbackToast)('📸 사진 모드 — 보고서 촬영용 가상 데이터입니다. 저장·전송되지 않아요', '📸 사진 모드');
+    }
   } catch (e) {}
 }
 
