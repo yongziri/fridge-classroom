@@ -5,6 +5,7 @@ name: Build Android APK (냉장고를 부탁해)
 #  · 완성된 APK 는 Actions 실행 결과 페이지의 Artifacts 에서 내려받습니다.
 #  · 대회 USB 제출용 — 게임이 APK 안에 들어 있어 인터넷 없이 실행됩니다.
 #    (조별 실시간 협력 기능만 인터넷 필요 — MQTT)
+#  · 2026-09-15: 미사용 NPC 정리본 재빌드(1차 실행이 SDK 설치 단계에서 일시 실패해 재시도)
 
 on:
   workflow_dispatch:        # Actions 탭에서 수동 실행
