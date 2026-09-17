@@ -395,6 +395,21 @@ body::before {
 /* 대사가 길어도 모달 세로를 밀지 않도록 3줄까지만 보이고 그 안에서 스크롤한다 */
 .dlg-box.dlg-mg .dlg-text { font-size: 14px; line-height: 1.45; padding: 5px 10px; margin-bottom: 0; max-height: 62px; overflow-y: auto; }
 .dlg-box.dlg-mg .dlg-offer { display: inline; margin-top: 0; margin-left: 4px; font-size: 13px; }
+/* 🎮 여정(정거장 도전) 모드 미니게임 모달 — 배너 + NPC 안내줄이 더 붙는 만큼 세로가 모자라 1280×800에서
+   본문(두더지 3×3 격자·점수판, 그림 탐정 팔레트 아래 문구 등)이 잘리고 모달 안에 스크롤바가 생기던 문제(2026-09-16 QA).
+   mgSetBanner가 여정 문맥일 때만 .live-modal-box에 'mg-journey'를 붙이므로 여정 밖(시연 바)에는 영향이 없다.
+   줄이는 것은 '여백'뿐 — 두더지 격자 셀·그림 탐정 캔버스 크기는 그대로 둔다. */
+.live-modal-box.mg-journey { padding: 10px 16px; }
+.mg-journey .dlg-box.dlg-mg { margin: 0 0 4px; gap: 7px; align-items: center; }
+.mg-journey .dlg-box.dlg-mg .dlg-portrait { height: 34px; max-width: 28px; }
+.mg-journey .dlg-box.dlg-mg .dlg-portrait-emoji { font-size: 22px; align-self: center; }
+/* 안내줄은 한 줄 고정 — 넘치면 말줄임(같은 대사 전문은 정거장 카드에서 이미 읽는다) */
+.mg-journey .dlg-box.dlg-mg .dlg-text { max-height: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 3px 9px; }
+/* 본문 세로 '여백'만 축소 — 1024×768에서 마지막까지 남던 그림 탐정 스크롤 제거 */
+.mg-journey .kt-timerow { margin-top: 3px; margin-bottom: 3px; }
+.mg-journey .pt-secret { margin-bottom: 3px; }
+.mg-journey #pt-draw { margin-top: 3px; margin-bottom: 3px; }
+.mg-journey .pt-palette { margin: 3px 0; }
 /* 🌮 텍스멕스 튜토리얼 */
 .texmex-card { text-align: left; }
 .tm-title { font-size: 15px; font-weight: bold; color: #ffd493; letter-spacing: 1px; margin-bottom: 10px; }
@@ -2295,6 +2310,11 @@ body.records-open .stats-panel, body.records-open .achv-panel, body.records-open
   max-width: 640px;
   padding: 28px 28px 0;
 }
+/* 🧷 좌하단 플로팅 버튼(#corner-btns — 높이 38px + 아래 여백 10px)에 마지막 버튼·카드가 가리던 문제(2026-09-16 QA).
+   끝까지 스크롤했을 때 내용이 버튼 위로 올라오도록 해당 화면에만 하단 여백을 준다.
+   ⚠ 인쇄(@media print)는 .screen-print-target .ending-body { padding: 0 !important }이 뒤에서 덮으므로 PDF에는 영향 없다. */
+#screen-ingredient-report .ending-body { padding-bottom: 96px; }
+#screen-lunch { padding-bottom: 96px; }
 .ending-scene {
   font-size: 64px;
   text-align: center;
@@ -4717,16 +4737,16 @@ if (typeof L === 'undefined') {
     <div style="font-size:13px;color:#ccc;line-height:1.9">
       <div style="margin-bottom:10px"><b style="color:#00e5ff">놀이 방법 (조별 협력!)</b><br>
       ① 냉장고 속 재료를 클릭해 <b style="color:#ffd700">조 투표</b> — 과반이 모이면 조 전체가 함께 출발!<br>
-      ② 지도 위 여정을 조원과 함께 이동 → ③ 퀴즈·🔍 오류 찾기·🔑 단서 자물쇠를 동시에 풀어요 — <b style="color:#00ff88">먼저 맞힌 조원이 문을 열면 다 같이 이동!</b><br>
+      ② 지도 위 여정을 조원과 함께 이동 → ③ 퀴즈·🔍 오류 찾기·🔑 단서 자물쇠를 동시에 풀어요 — <b style="color:#00ff88">조원 모두가 답을 내면 「다음으로」에 과반이 모여 함께 이동해요</b><br>
       ④ 완주하면 조 전원이 같은 등급으로 재료 획득 → 재료를 모아 요리 완성!</div>
       <div style="margin-bottom:10px"><b style="color:#00e5ff">조원과 소통</b><br>
       모든 협력 게임 아래에 있는 이모트 버튼(💡 알 것 같아! · 🤔 같이 생각하자 …)을 누르면 조원 카드에 말풍선이 떠요. 정해진 문구만 보낼 수 있고 선생님도 함께 봐요.</div>
       <div style="margin-bottom:10px"><b style="color:#00e5ff">조작법</b><br>
       마우스 클릭 또는 터치로 진행해요. 키보드만으로도 가능해요 (Tab으로 이동, Enter로 선택).</div>
       <div><b style="color:#00e5ff">화면 안내</b><br>
-      메인 화면 <b style="color:#ffd700">📚 기록·도감</b> 버튼을 누르면 🏆 도전과제 · 📖 재료도감 · 🎭 상인도감 · ⓘ 출처·저작권이 열려요. (ⓘ 출처·저작권은 첫 화면 아래에서도 볼 수 있어요.)<br>
+      메인 화면 <b style="color:#ffd700">🏆 도전과제·📖 재료도감·🎭 상인도감·ⓘ 출처·저작권</b> 버튼을 누르면 각각 열려요. (ⓘ 출처·저작권은 첫 화면 아래에서도 볼 수 있어요.)<br>
       궁금한 게 있으면 화면 왼쪽 아래 <b style="color:#00e5ff">🗨️ 셰프에게(챗봇)</b> 버튼으로 물어보세요!<br>
-      <b style="color:#00e5ff">📰 팩트체크</b>로 정보 판별 훈련, <b style="color:#ffd700">🍱 급식판</b>은 조원과 실시간 공동 제작 후 🖼️ 전시관에 전시하고 ⭐ 별점 평가, <b style="color:#ff9e3d">🍳 부엌 대소동</b>에서 시대의 주문서에 도전해 보세요!</div>
+      <b style="color:#ffd700">🍱 급식판</b>은 조원과 실시간 공동 제작 후 🖼️ 전시관에 전시하고 ⭐ 별점 평가, <b style="color:#ff9e3d">🍳 부엌 대소동</b>에서 시대의 주문서에 도전해 보세요!</div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
       <button class="live-btn live-btn-ghost" onclick="coachRestart()">🔍 안내 다시 보기</button>
@@ -7831,9 +7851,10 @@ function lunchShowMap() {
   document.getElementById('lunch-map-modal').style.display = 'flex';
   if (!lunchMap) {
     lunchMap = L.map('lunch-map', { zoomControl: false, attributionControl: true, minZoom: 1, maxZoom: 6, worldCopyJump: true }).setView([25, 40], 2);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd', maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+    // 지도 타일: CARTO → Esri World Dark Gray Canvas (2026-09-16, CARTO 무료 타일이 API 키 없이는 워터마크를 표시)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Tiles &copy; <a href="https://www.esri.com/" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
     }).addTo(lunchMap);
     lunchMapLayer = L.layerGroup().addTo(lunchMap);
     // 학생이 지도를 옮기거나 확대하면 라벨 자리를 다시 잡는다
@@ -8401,7 +8422,7 @@ const COACH_STEPS = {
   },
   quiz: {
     target: () => document.getElementById('stop-card'),
-    html: '퀴즈는 조원이 <b style="color:#ffd700">동시에</b> 풀어요 — <b style="color:#00ff88">먼저 맞힌 사람이 문을 열면 다 같이 이동!</b><br>틀려도 괜찮아요 — 바로 다시 도전할 수 있어요 💪',
+    html: '퀴즈는 조원이 <b style="color:#ffd700">동시에</b> 풀어요 — <b style="color:#00ff88">조원 모두가 답을 내면 「다음으로」에 과반이 모여 함께 이동해요</b><br>틀려도 괜찮아요 — 바로 다시 도전할 수 있어요 💪',
     btnLabel: '시작하기!',
     next: null,
   },
@@ -9402,7 +9423,7 @@ function showStop(index) {
           if (nid && NPC_REGISTRY[nid] && !state.npcMet.has(nid)) { state.npcMet.add(nid); _metNew = true; }
         });
         if (_metNew) {
-          localStorage.setItem('npcMet', JSON.stringify([...state.npcMet]));
+          safeSave('npcMet', JSON.stringify([...state.npcMet]));
           if (typeof checkAchievements === 'function') checkAchievements();
         }
       } catch (e) {}
@@ -9494,7 +9515,8 @@ function showStop(index) {
       try { leafletMap.setView([stop.lat, stop.lng], zoom, { animate: false }); } catch (e) {}
     }
     // 카드 표시는 지도 이동 성공 여부와 무관하게 항상 실행 (그늘·자물쇠 등 도전이 반드시 뜨도록)
-    setTimeout(() => showCardContent(), moved ? 1000 : 200);
+    // 연도 오버레이는 2600ms 자동 숨김이라 카드(1000ms)와 겹쳤다 — 카드를 띄우기 직전에 먼저 내린다(2026-09-16 QA)
+    setTimeout(() => { try { document.getElementById('year-overlay').style.display = 'none'; } catch (e) {} showCardContent(); }, moved ? 1000 : 200);
   }
 }
 
@@ -9558,7 +9580,7 @@ function addWrongNote(type, q, userAnswer, correctAnswer, explain) {
     explain: explain || '',
     timestamp: Date.now()
   });
-  localStorage.setItem('wrongNotes', JSON.stringify(state.wrongNotes));
+  safeSave('wrongNotes', JSON.stringify(state.wrongNotes));
 }
 
 // ══════════════════════════════════
@@ -9779,7 +9801,7 @@ function openIngredient(id, forceRetry) {
   if (!data) { _ingLoading = false; return; }
   if (!state.firstClick) {
     state.firstClick = true;
-    localStorage.setItem('firstClick', 'true');
+    safeSave('firstClick', 'true');
     checkAchievements();
   }
 
@@ -9945,9 +9967,10 @@ function initClearedMap(routePoints) {
     scrollWheelZoom: false,
   }).setView([30, 60], 2);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
+  // 지도 타일: CARTO → Esri World Dark Gray Canvas (2026-09-16, CARTO 무료 타일이 API 키 없이는 워터마크를 표시)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 16,
+    attribution: 'Tiles &copy; <a href="https://www.esri.com/" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   }).addTo(csLeafletMap);
 
   // 전체 경로 폴리라인
@@ -9991,10 +10014,10 @@ function initLeafletMap() {
     worldCopyJump: true,
   }).setView([30, 60], 2);
 
-  const baseTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+  // 지도 타일: CARTO → Esri World Dark Gray Canvas (2026-09-16, CARTO 무료 타일이 API 키 없이는 워터마크를 표시)
+  const baseTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 16,
+    attribution: 'Tiles &copy; <a href="https://www.esri.com/" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
   });
   // Leaflet은 내장이라 오프라인에서도 경로·마커 학습은 정상 — 타일(배경 지도)만 못 받는 경우 1회 안내
   baseTiles.on('tileerror', function () {
@@ -10771,7 +10794,7 @@ var KITCHEN_ROUNDS = [
   { era: 3, name: '1890년대 개항기 — 서양 손님 접대상', desc: '이제 모든 재료가 식탁 위에! 시간 안에 전부 보내라 — 스피드전!', time: 30 }
 ];
 // ing·stop: 이 판이 어느 재료·어느 정거장의 판인지(mgKeyOf) — 옛 retained 메시지에는 없어 undefined로 남는다
-var KITCHEN = { status: null, round: 0, startTs: 0, sent: {}, bad: {}, miss: 0, results: [], ok: null, ts: 0, timer: null, open: false, ing: undefined, stop: undefined, rid: undefined };
+var KITCHEN = { status: null, round: 0, startTs: 0, sent: {}, bad: {}, miss: 0, results: [], ok: null, ts: 0, timer: null, open: false, ing: undefined, stop: undefined, rid: undefined, sess: 0 };
 
 // 여정 문맥에 맞춰 라운드 순서를 재배열한 "사본"을 반환(원본 KITCHEN_ROUNDS 불변).
 //   규칙: 여정 재료가 아직 안 온 재료로 걸러지는 마지막(도착 직전) 라운드를 1라운드로.
@@ -10814,7 +10837,7 @@ function kitchenClose() {
 }
 function kitchenRestart() {
   // 새 판이므로 지금 정거장의 판 문맥(ing·stop)을 함께 발행한다 — 조원은 이 값으로 "같은 판"을 알아본다
-  kitchenPub({ status: 'play', round: 0, startTs: Date.now(), sent: {}, bad: {}, miss: 0, results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid() });
+  kitchenPub({ status: 'play', round: 0, startTs: Date.now(), sent: {}, bad: {}, miss: 0, results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid(), sess: Date.now() });
 }
 
 function kitchenPub(patch) {
@@ -10823,6 +10846,9 @@ function kitchenPub(patch) {
     ing: patch.ing !== undefined ? patch.ing : KITCHEN.ing,
     stop: patch.stop !== undefined ? patch.stop : KITCHEN.stop,
     rid: patch.rid !== undefined ? patch.rid : KITCHEN.rid,
+    // 🔁 판 일련번호 — 같은 정거장에서 [재도전]으로 다시 시작한 판을 이전 판과 구분한다(두더지와 동일 방식).
+    //    옛 retained 메시지엔 없어 undefined→0으로 읽히고 초기 KITCHEN.sess도 0이라 하위호환.
+    sess: patch.sess !== undefined ? patch.sess : KITCHEN.sess,
     status: patch.status != null ? patch.status : KITCHEN.status,
     round: patch.round != null ? patch.round : KITCHEN.round,
     startTs: patch.startTs != null ? patch.startTs : KITCHEN.startTs,
@@ -10841,8 +10867,10 @@ function kitchenOnMsg(data) {
   //   조리대에 올린 재료가 유실(예: 조리대 9/11에서 멈춤)되던 버그의 근본 수정. 두더지의 점수 최대병합(moleOnMsg)과 동일한 수신측 처리 방식.
   //   메시지 형태·발행 프로토콜은 불변 — 수신 해석만 치환→병합으로 바꾼다. 라운드/상태 전환은 아래 기존 ts-게이트 경로가 그대로 담당(스테일 재유입 차단).
   //   ★ 증분 병합은 "같은 판" 안에서만 — 다른 정거장의 판이면 아래 전체 치환 경로로 내려가 결과가 초기화된다(2026-07-27)
+  //   ★ 같은 정거장에서 [재도전]으로 시작한 새 판도 증분 병합 대상이 아니다 — 재시작 메시지의 sent:{}가
+  //     합집합 병합에 먹혀 초기화가 무시되고 열자마자 통과되던 버그의 원인이 이 분기였다(2026-09-16)
   if (data.status === 'play' && KITCHEN.status === 'play' && (data.round || 0) === KITCHEN.round
-    && mgKeyOf(data) === mgKeyOf(KITCHEN)) {
+    && mgKeyOf(data) === mgKeyOf(KITCHEN) && ((data.sess || 0) === (KITCHEN.sess || 0))) {
     var merged = false;
     if (data.sent) Object.keys(data.sent).forEach(function (id) { if (!KITCHEN.sent[id]) { KITCHEN.sent[id] = data.sent[id]; merged = true; } });
     if (data.bad) Object.keys(data.bad).forEach(function (id) { if (!KITCHEN.bad[id]) { KITCHEN.bad[id] = data.bad[id]; merged = true; } });
@@ -10856,10 +10884,13 @@ function kitchenOnMsg(data) {
   }
   if ((data.ts || 0) <= KITCHEN.ts) return;
   var prevStatus = KITCHEN.status, prevRound = KITCHEN.round;
+  // 🎮 다른 판(다른 재료·정거장)이거나 같은 정거장의 새 판(재도전)인가 — 두더지(moleOnMsg)와 동일한 판별
+  var newSession = (mgKeyOf(data) !== mgKeyOf(KITCHEN)) || ((data.sess || 0) !== (KITCHEN.sess || 0));
   KITCHEN.ts = data.ts;
   KITCHEN.ing = data.ing;   // 🎮 판 문맥 인계 (없는 옛 메시지는 undefined 그대로)
   KITCHEN.stop = data.stop;
   KITCHEN.rid = data.rid;
+  KITCHEN.sess = data.sess || 0; // 🔁 판 일련번호 인계
   KITCHEN.status = data.status;
   KITCHEN.round = data.round || 0;
   KITCHEN.startTs = data.startTs || 0;
@@ -10871,7 +10902,7 @@ function kitchenOnMsg(data) {
   if (KITCHEN.open) kitchenRender();
   if (data.status === 'play') {
     kitchenTick(KITCHEN.open || kitchenLeader());
-    if (window.__demoGroup && (prevStatus !== 'play' || prevRound !== KITCHEN.round)) kitchenBotsPlan();
+    if (window.__demoGroup && (newSession || prevStatus !== 'play' || prevRound !== KITCHEN.round)) kitchenBotsPlan();
     kitchenCheckRound();
   } else if (data.status === 'inter') {
     kitchenTick(false);
@@ -11120,7 +11151,7 @@ function paintRoundsView() {
   return head.length ? head.concat(tail) : PAINT_ROUNDS;
 }
 // ing·stop: 이 판이 어느 재료·어느 정거장의 판인지(mgKeyOf) — 옛 retained 메시지에는 없어 undefined로 남는다
-var PAINT = { status: null, round: 0, strokes: [], cur: null, guesses: {}, scores: {}, startTs: 0, results: [], ts: 0, open: false, timer: null, color: 2, width: 14, dirty: false, ing: undefined, stop: undefined, rid: undefined };
+var PAINT = { status: null, round: 0, strokes: [], cur: null, guesses: {}, scores: {}, startTs: 0, results: [], ts: 0, open: false, timer: null, color: 2, width: 14, dirty: false, ing: undefined, stop: undefined, rid: undefined, sess: 0 };
 var PAINT_TIME = 75;  // 라운드 제한(초)
 // 자유 손그림: 선(stroke) 단위 동기화 — {c:색, w:굵기, p:[x,y,x,y,…]} (좌표는 0~1000×0~750 정규화)
 var PAINT_COLORS = ['#0d1424', '#f4f4f4', '#e94560', '#ffd700', '#00ff88', '#00e5ff', '#9a6a3a']; // 0 = 배경색 = 지우개
@@ -11173,7 +11204,7 @@ function paintClose() {
 }
 function paintRestart() {
   // 새 판이므로 지금 정거장의 판 문맥(ing·stop)을 함께 발행한다
-  paintPub({ status: 'play', round: 0, strokes: [], guesses: {}, scores: {}, startTs: Date.now(), results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid() });
+  paintPub({ status: 'play', round: 0, strokes: [], guesses: {}, scores: {}, startTs: Date.now(), results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid(), sess: Date.now() });
 }
 
 function paintPub(patch) {
@@ -11182,6 +11213,9 @@ function paintPub(patch) {
     ing: patch.ing !== undefined ? patch.ing : PAINT.ing,
     stop: patch.stop !== undefined ? patch.stop : PAINT.stop,
     rid: patch.rid !== undefined ? patch.rid : PAINT.rid,
+    // 🔁 판 일련번호 — 같은 정거장에서 [재도전]으로 다시 시작한 판을 이전 판과 구분한다(두더지와 동일 방식).
+    //    옛 retained 메시지엔 없어 undefined→0으로 읽히고 초기 PAINT.sess도 0이라 하위호환.
+    sess: patch.sess !== undefined ? patch.sess : PAINT.sess,
     status: patch.status != null ? patch.status : PAINT.status,
     round: patch.round != null ? patch.round : PAINT.round,
     strokes: patch.strokes != null ? patch.strokes : PAINT.strokes,
@@ -11196,7 +11230,7 @@ function paintPub(patch) {
 function paintOnMsg(data) {
   if (!data || !data.status) return;
   // 🎮 다른 판(다른 재료·정거장)의 메시지인가 — 새 판이면 이전 판의 점수·추리를 이어받지 않는다(2026-07-27)
-  var newSession = (mgKeyOf(data) !== mgKeyOf(PAINT));
+  var newSession = (mgKeyOf(data) !== mgKeyOf(PAINT)) || ((data.sess || 0) !== (PAINT.sess || 0));
   // 점수·추리는 ts와 무관하게 병합 (동시 발행 유실 방지) — 단 같은 판 안에서만
   if (data.scores && !newSession) {
     Object.keys(data.scores).forEach(function (sid) {
@@ -11215,6 +11249,7 @@ function paintOnMsg(data) {
     PAINT.ing = data.ing;   // 🎮 판 문맥 인계
     PAINT.stop = data.stop;
     PAINT.rid = data.rid;
+    PAINT.sess = data.sess || 0; // 🔁 판 일련번호 인계
     if (newSession) PAINT.scores = data.scores || {}; // 이전 판 점수 폐기
     PAINT.status = data.status;
     PAINT.round = data.round || 0;
@@ -11875,7 +11910,7 @@ var GUEST_ROUNDS = [
 ];
 // ing·stop: 이 판이 어느 재료·어느 정거장의 판인지(mgKeyOf) — 옛 retained 메시지에는 없어 undefined로 남는다
 // meActed: 이번 라운드에 내가 접시를 올렸는가 — 시연 봇이 상을 마무리해도 되는지 판단하는 데만 쓴다(실수업 판정 무관)
-var GUEST = { status: null, round: 0, served: {}, oops: {}, results: [], ts: 0, open: false, ing: undefined, stop: undefined, rid: undefined, meActed: false };
+var GUEST = { status: null, round: 0, served: {}, oops: {}, results: [], ts: 0, open: false, ing: undefined, stop: undefined, rid: undefined, sess: 0, meActed: false };
 
 // 여정 재료의 지역과 가장 관련 있는 손님을 1라운드로 당긴 사본을 반환(원본 불변). 손님 3인은 그대로 등장.
 //   여정 밖에서는 원본 순서 그대로. 조원은 같은 재료를 공유하므로 같은 순서를 본다.
@@ -11919,7 +11954,7 @@ function guestClose() {
 }
 function guestRestart() {
   // 새 판이므로 지금 정거장의 판 문맥(ing·stop)을 함께 발행한다
-  guestPub({ status: 'play', round: 0, served: {}, oops: {}, results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid() });
+  guestPub({ status: 'play', round: 0, served: {}, oops: {}, results: [], ing: mgCtxIng(), stop: mgCtxStop(), rid: mgCtxRid(), sess: Date.now() });
 }
 
 function guestPub(patch) {
@@ -11928,6 +11963,9 @@ function guestPub(patch) {
     ing: patch.ing !== undefined ? patch.ing : GUEST.ing,
     stop: patch.stop !== undefined ? patch.stop : GUEST.stop,
     rid: patch.rid !== undefined ? patch.rid : GUEST.rid,
+    // 🔁 판 일련번호 — 같은 정거장에서 [재도전]으로 다시 시작한 판을 이전 판과 구분한다(두더지와 동일 방식).
+    //    옛 retained 메시지엔 없어 undefined→0으로 읽히고 초기 GUEST.sess도 0이라 하위호환.
+    sess: patch.sess !== undefined ? patch.sess : GUEST.sess,
     status: patch.status != null ? patch.status : GUEST.status,
     round: patch.round != null ? patch.round : GUEST.round,
     served: patch.served != null ? patch.served : GUEST.served,
@@ -11940,10 +11978,13 @@ function guestPub(patch) {
 function guestOnMsg(data) {
   if (!data || !data.status || (data.ts || 0) <= GUEST.ts) return;
   var prevStatus = GUEST.status, prevRound = GUEST.round;
+  // 🎮 다른 판(다른 재료·정거장)이거나 같은 정거장의 새 판(재도전)인가 — 두더지(moleOnMsg)와 동일한 판별
+  var newSession = (mgKeyOf(data) !== mgKeyOf(GUEST)) || ((data.sess || 0) !== (GUEST.sess || 0));
   GUEST.ts = data.ts;
   GUEST.ing = data.ing;   // 🎮 판 문맥 인계 (없는 옛 메시지는 undefined 그대로)
   GUEST.stop = data.stop;
   GUEST.rid = data.rid;
+  GUEST.sess = data.sess || 0; // 🔁 판 일련번호 인계
   GUEST.status = data.status;
   GUEST.round = data.round || 0;
   GUEST.served = data.served || {};
@@ -11951,7 +11992,7 @@ function guestOnMsg(data) {
   GUEST.results = data.results || [];
   if (GUEST.open) guestRender();
   if (data.status === 'play') {
-    if (window.__demoGroup && (prevStatus !== 'play' || prevRound !== GUEST.round)) guestBotsPlan();
+    if (window.__demoGroup && (newSession || prevStatus !== 'play' || prevRound !== GUEST.round)) guestBotsPlan();
     guestCheckRound();
   } else if (data.status === 'inter' && guestLeaderIsMe()) {
     setTimeout(function () {
@@ -12676,8 +12717,11 @@ function mgSetBanner(bodyId) {
     body.parentNode.insertBefore(npcBox, body);
   }
   var ctx = mgJourneyCtx();
-  // NPC 안내가 아래에 한 칸 더 서므로 배너는 한 줄로 압축한다(모달 세로 절약, 2026-07-27)
-  var base = 'font-size:14px;line-height:1.35;font-weight:700;margin:0 0 7px;padding:5px 12px;border-radius:9px;'
+  // 🎮 여정 모드 표시 — 모달 박스에 'mg-journey'를 붙여 여정 전용 여백 축소 CSS만 적용한다(여정 밖이면 제거).
+  //    여는 시점마다 여기서 다시 판정하므로 닫을 때 지울 필요가 없다.
+  try { body.parentNode.classList.toggle('mg-journey', !!ctx); } catch (e) {}
+  // NPC 안내가 아래에 한 칸 더 서므로 배너는 한 줄로 압축한다(모달 세로 절약, 2026-07-27 · 2026-09-16 여백 재축소)
+  var base = 'font-size:13px;line-height:1.35;font-weight:700;margin:0 0 4px;padding:2px 10px;border-radius:9px;'
     + 'background:linear-gradient(90deg,rgba(0,229,255,0.16),rgba(0,229,255,0.04));'
     + 'border:1px solid rgba(0,229,255,0.35);color:#bff3ff;text-align:center';
   if (!ctx) {
@@ -12727,6 +12771,9 @@ function buildMinigameChallenge(ch, isFinal, retry) {
 
 // [도전 시작] — 정거장 도전 모드로 표시하고 해당 미니게임을 연다
 function mgStopStart(game, retry) {
+  // 🔁 이미 통과한 정거장이면 무동작 — showStopFeedback(correct)가 state.stopSolved=true로 잠그므로
+  //    이 값이 "이 정거장은 끝났다"를 뜻한다(다른 도전 유형의 연타 방지 가드와 같은 기준).
+  if (state.stopSolved) return;
   var stop = state.journeyStops && state.journeyStops[state.currentStop];
   // 🔁 재도전 표시 — 아래 mgForceNew()가 한 번 읽고 지운다 (이 판만 새로 시작)
   MG_STOP.forceNew = !!retry;
@@ -12765,6 +12812,13 @@ function mgStopWin(game) {
   var isFinal = MG_STOP.isFinal;
   setTimeout(function () {
     minigameCloseByKey(game);
+    // 🔁 통과했으니 정거장 카드의 재도전 UI를 걷어낸다 — 남아 있으면 다시 눌려 정답 수가 부풀었다(2026-09-16 QA)
+    try {
+      var _r = document.querySelector('#stop-challenge .mg-stop-retry');
+      if (_r) _r.remove();
+      var _b = document.querySelector('#stop-challenge .mg-stop-start');
+      if (_b) _b.remove();
+    } catch (e) { /* 카드 정리 실패가 통과를 막지 않음 */ }
     showStopFeedback(true, isFinal, '🎮 미니게임 통과! 멋지게 해냈어요!');
   }, 1500);
 }
@@ -13053,7 +13107,7 @@ var CREDITS = [
   ] },
   { sec: '오픈소스 라이브러리 · 지도 데이터', items: [
     { t: '지도 라이브러리 Leaflet 1.9.4', q: '', src: 'BSD-2-Clause License (leafletjs.com)' },
-    { t: '지도 타일 · 지리 데이터', q: '', src: '© OpenStreetMap contributors (ODbL) · © CARTO' },
+    { t: '지도 타일 · 지리 데이터', q: '', src: 'Tiles © Esri — Esri, HERE, Garmin, FAO, NOAA, USGS · © OpenStreetMap contributors (ODbL)' },
     { t: '실시간 교실 통신 라이브러리 MQTT.js', q: '', src: 'MIT License (github.com/mqttjs)' }
   ] }
 ];
@@ -14011,9 +14065,10 @@ function edInitMinimap(id) {
     maxZoom: 10,
   }).setView([30, 60], 2);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
+  // 지도 타일: CARTO → Esri World Dark Gray Canvas (2026-09-16, CARTO 무료 타일이 API 키 없이는 워터마크를 표시)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 16,
+    attribution: 'Tiles &copy; <a href="https://www.esri.com/" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   }).addTo(edMap);
 
   // 맵 클릭 → 새 포인트 추가
@@ -16547,10 +16602,10 @@ var TUTOR_STEPS = [
     text: '이게 자네의 <b>셰프 레벨</b>이라네. 재료를 모으고 → 급식판을 만들고 → 전시·평가까지 하다 보면 견습 요리사에서 <b>마스터 셰프</b>까지 승급하지. 배지 아래 안내가 다음 목표라네!' },
   { sel: '.ingredient[data-id="pepper"]', mode: 'click',
     text: '냉장고의 <b>재료를 직접 눌러</b> 보게! 조가 배정되면 이렇게 재료에 투표하고, 조원 과반이 모이면 함께 공동 여정을 떠난다네.' },
-  { sel: '[title="오늘의 급식 만들기"]', mode: 'next',
+  { sel: '.side-lunch', mode: 'next',
     text: '여정에서 재료를 모으면 <b>🍱 급식판</b>에서 조원들과 우리 조의 급식을 함께 만든다네. 완성하면 전시관에 자랑할 수 있지!' },
-  { sel: '#btn-group-games', mode: 'click',
-    text: '선생님이 활동을 안내하면 <b>🎮 조별 활동</b> 메뉴에서 미니게임을 연다네. 지금 한번 눌러서 열어 보게!' },
+  { sel: '#peer-chat-btn', mode: 'next',
+    text: '미니게임은 여정의 정거장에서 자동으로 열린다네. 조원과는 <b>💬 조원에게</b> 버튼으로 이모트를 보내 마음을 나눌 수 있지!' },
   { sel: null, mode: 'end',
     text: '준비 끝! 이제 <b>선생님의 조 배정</b>을 기다렸다가 재료 투표로 여정을 시작하게. 내 냉장고를 부탁하네, 견습 요리사! 🙏' }
 ];
@@ -16575,7 +16630,7 @@ function tutorEnd() {
   if (b) b.remove();
   document.querySelectorAll('.tutor-glow').forEach(function (el) { el.classList.remove('tutor-glow'); });
   if (window.__demoGroup) {
-    try { showFeedbackToast('🎬 상단 시연 바의 번호 순서(①→④)대로 수업 흐름을 둘러보세요!'); } catch (e) {}
+    try { showFeedbackToast('🤝 냉장고의 재료를 눌러 투표해 보세요 — 조원 과반이 모이면 공동 여정이 시작돼요'); } catch (e) {}
   }
 }
 
@@ -16672,6 +16727,13 @@ function devModeEnter() {
   updateMainUI(); // 신원·조 시딩 뒤에 호출 — 상태바에 "점검자 · 1모둠"이 바로 보이도록
   try {
     showFeedbackToast('🤝 체험 모드 — 가상 조원(봇) 3명과 함께 전체 흐름(투표→공동 여정→미니게임→급식판)을 체험할 수 있어요');
+  } catch (e) {}
+  // 실제 학생과 같은 순서로 연습 여정(타코)을 먼저 권한다 — 심사위원이 체험 모드에서 튜토리얼을 볼 길이 없었음(2026-09-16 QA).
+  //   gateAfterOnboarding과 같은 기준(sessionStorage texmexSeen)이라 같은 탭에서는 한 번만 뜬다.
+  try {
+    var _seen = false;
+    try { _seen = sessionStorage.getItem('texmexSeen') === '1'; } catch (e) {}
+    if (!_seen) setTimeout(function () { texmexShow(); }, 600);
   } catch (e) {}
 }
 
@@ -17017,7 +17079,9 @@ function photoGoTeacher() {
     var codeEl = document.getElementById('live-room-code-display');
     if (codeEl) codeEl.textContent = PHOTO_ROOM_CODE;
     var st = document.getElementById('live-room-status');
-    if (st) st.innerHTML = '<span style="color:#00ff88;font-size:13px;">🟢 교실 연결됨</span>';
+    if (st) st.innerHTML = window.__judgeMode
+      ? '<span style="color:#8a94ad;font-size:13px;">🔍 심사용 가상 교실 — 실제 전송은 되지 않아요</span>'
+      : '<span style="color:#00ff88;font-size:13px;">🟢 교실 연결됨</span>';
     var gcount = document.getElementById('group-count-input');
     if (gcount) gcount.value = PHOTO_GROUP_COUNT;
     if (typeof liveRenderStudents === 'function') liveRenderStudents();
@@ -17133,6 +17197,15 @@ function liveTeacherLogin() {
 
 // ── 화면 전환 헬퍼 ──
 function liveGoBackMain() {
+  // 심사용·사진 모드(가상 데이터)에서 나갈 때는 새로고침으로 완전 초기화 —
+  //   가상 학생 30명·조 편성·통계가 뒤이어 여는 실제 교실에 섞여 보이던 문제(2026-09-16 QA)
+  if (window.__judgeMode || window.__photoMode) { location.reload(); return; }
+  // 교실이 열려 있으면 닫고 나간다 — 안 닫으면 옛 방의 teacher/online(retained)이 남아
+  //   학생이 그 방 번호로 들어오고, 다시 열 때 MQTT 클라이언트가 누적된다(2026-09-16 QA)
+  if (LIVE.isTeacher && LIVE.roomCode) {
+    if (!confirm('교실을 닫고 처음 화면으로 갈까요?\n\n· 참가한 학생들은 첫 화면으로 돌아갑니다')) return;
+    try { liveCloseRoom(); } catch (e) {}
+  }
   // 조별 수업 전용화: 교사 화면에서 나가면 학생용 메인이 아니라 참가 게이트로
   showScreen('screen-gate');
   gatePrefill();
@@ -17220,6 +17293,8 @@ function liveConnect(roomCode, isTeacher) {
     MQTT_BROKER = MQTT_BROKERS[LIVE.brokerIdx];
     LIVE.everConnected = false;
     LIVE.reconnectN = 0;
+    // 이전 연결이 남아 있으면 먼저 끊는다 — 옛 방의 message 핸들러가 살아 새 방 목록에 섞여 쓰던 문제(2026-09-16 QA)
+    if (LIVE.client) { try { var _old = LIVE.client; LIVE.client = null; _old.end(true); } catch (e) {} }
     LIVE.client = mqtt.connect(MQTT_BROKER, {
       clientId: clientId,
       clean: true,
@@ -17696,6 +17771,7 @@ function liveRenderStudents() {
 //   영구 차단이 아니라 이번 세션에서만 내보내는 것 — 학생이 방 번호를 다시 입력하면 들어올 수 있다.
 //   진행 기록(retained 진도)은 지우지 않는다 — 교사 통계·평가 근거가 사라지면 곤란하다.
 function liveKickStudent(sid) {
+  if (window.__judgeMode || window.__photoMode) { try { (typeof _photoToastOrig === 'function' ? _photoToastOrig : showFeedbackToast)('🔍 가상 데이터 화면이라 전송되지 않아요 — 실제 교실에서만 동작해요', '🔍 심사용'); } catch (e) {} return; }
   if (!LIVE.client || !LIVE.connected || !LIVE.roomCode) { alert('교실이 연결되어 있지 않습니다.'); return; }
   var s = LIVE.students[sid] || {};
   var who = (s.id || sid) + ' ' + (s.name || '');
@@ -19043,6 +19119,7 @@ function groupMoveTo(targetGid) {
 
 function groupStart() {
   if (GROUP.groups.length === 0) { alert('먼저 모둠 배정을 해주세요.'); return; }
+  if (window.__judgeMode || window.__photoMode) { try { (typeof _photoToastOrig === 'function' ? _photoToastOrig : showFeedbackToast)('🔍 가상 데이터 화면이라 전송되지 않아요 — 실제 교실에서만 동작해요', '🔍 심사용'); } catch (e) {} return; }
   if (!LIVE.client || !LIVE.connected) { alert('교실이 연결되어 있지 않습니다.'); return; }
   GROUP.active = true;
   GROUP.manual = true;
