@@ -16280,7 +16280,9 @@ function howtoClose() {
 // hello = 그 인물의 모국어 인사(교류의 다양성을 첫 화면에서 바로 느끼게).
 // ※ 출연진 목록은 함수 안에 둔다 — init()이 이 줄들보다 먼저 실행되므로(호출부가 위쪽에 있다)
 //   전역 var 로 두면 그 시점엔 아직 undefined 라 렌더가 빈 채로 지나간다.
-var _gateCastTimer = null;
+// ※ 초기값을 대입하지 않는다 — init()이 이 줄보다 먼저 실행돼 타이머를 만든 뒤, 여기서 null을 대입하면
+//   핸들이 지워져 clearInterval이 듣지 않고 첫 화면으로 돌아올 때마다 타이머가 쌓였다(2026-09-17)
+var _gateCastTimer;
 function gateRenderCast() {
   var GATE_FIG_H = 150; // 보이는 인물 키(px) — 원본 여백과 무관하게 전원 동일
   var GATE_CAST_LEFT = [
@@ -17313,6 +17315,9 @@ function liveConnect(roomCode, isTeacher) {
   // 한 번이라도 연결된 뒤에는 폴백하지 않음 — 교사·학생이 서로 다른 서버로 갈라지는 것 방지.
   if (LIVE.brokerTimer) clearTimeout(LIVE.brokerTimer);
   LIVE.brokerTimer = setTimeout(function () {
+    // 이 타이머를 건 연결이 이미 닫혔거나(교실 닫기·「처음으로」) 새 연결로 교체됐으면 재시도하지 않는다 —
+    //   접속 전에 나간 교사 쪽에서 12초 뒤 닫은 방 번호로 예비 서버에 교실이 다시 열리던 문제(2026-09-17)
+    if (LIVE.client !== myClient) return;
     if (LIVE.connected || LIVE.everConnected) return;
     try { LIVE.client.end(true); } catch (e) {}
     var next = LIVE.brokerIdx + 1;
@@ -17329,8 +17334,12 @@ function liveConnect(roomCode, isTeacher) {
   }, 12000);
 
   var prefix = 'fridge/' + roomCode + '/';
+  var myClient = LIVE.client; // 이 호출이 만든 연결 — 콜백이 뒤늦게 돌 때 이미 닫혔거나 교체됐는지 가리는 기준
 
   LIVE.client.on('connect', function() {
+    // 접속이 끝나기 전에 교실을 닫았거나(「처음으로」·교실 닫기) 새 연결로 교체됐다면 늦게 도착한 콜백은 버린다 —
+    //   LIVE.client가 null이라 subscribe에서 오류가 나고, 닫힌 방의 teacher/online(retained)이 뒤늦게 발행되던 문제(2026-09-17)
+    if (LIVE.client !== myClient) { try { myClient.end(true); } catch (e) {} return; }
     LIVE.connected = true;
     LIVE.everConnected = true;
     LIVE.reconnectN = 0;
@@ -17637,6 +17646,7 @@ function liveCloseRoom() {
   LIVE.connected = false;
   LIVE.roomCode = null;
   LIVE.students = {};
+  if (LIVE.brokerTimer) { clearTimeout(LIVE.brokerTimer); LIVE.brokerTimer = null; } // 닫은 방으로 예비 서버 재시도가 걸려 있으면 취소
   if (LIVE.heartbeatInterval) { clearInterval(LIVE.heartbeatInterval); LIVE.heartbeatInterval = null; }
   if (LIVE.timer) { clearInterval(LIVE.timer); LIVE.timer = null; }
   LIVE.projectorOpen = false;
